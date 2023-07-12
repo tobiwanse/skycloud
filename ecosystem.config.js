@@ -6,7 +6,7 @@ module.exports = {
 		watch_delay: 1000,
 		ignore_watch: [ "node_modules", "cumulus", ".git", "dist", ".nova" ],
 		env: {
-			NODE_ENV: 'developmentt'
+			NODE_ENV: 'development'
 		},
 		env_production: {
 			NODE_ENV: 'production'
