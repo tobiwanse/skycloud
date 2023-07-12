@@ -19,7 +19,7 @@ module.exports = {
 			host: [ "mycloud.nu" ],
 			ssh_options: ["StrictHostKeyChecking=no"],
 			ref: "origin/main",
-			repo: "git@github.com:tobiwanse/skycloud-server.git",
+			repo: "git@github.com:tobiwanse/skycloud.git",
 			path: "/Users/macmini/www/test.skycloud.nu",
 			// "post-deploy": "export PATH=$PATH:/usr/local/bin && npm install && ls -a && pm2 startOrRestart ./server/ecosystem.config.js --env development"
 			"post-deploy": "export PATH=$PATH:/usr/local/bin && npm install && ls -a && pm2 startOrRestart ./server/ecosystem.config.js --env development"
