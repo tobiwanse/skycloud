@@ -1,7 +1,7 @@
 module.exports = {
 	apps: [ {
 		name: "skycloud",
-		script: "server/server.js",
+		script: "server/serverr.js",
 		watch: true,
 		watch_delay: 1000,
 		ignore_watch: [ "node_modules", "cumulus", ".git", "dist", ".nova" ],
