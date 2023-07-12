@@ -1,6 +1,6 @@
 module.exports = {
 	apps: [ {
-		name: "skycloud",
+		name: "skycloud-dev",
 		script: "server.js",
 		cwd: "./server",
 		watch: true,
@@ -8,7 +8,11 @@ module.exports = {
 		ignore_watch: [ "node_modules", "cumulus", ".git", "dist", ".nova" ],
 		env: {
 			NODE_ENV: 'development'
-		},
+		}
+	},{
+		name: "skycloud",
+		script: "server.js",
+		cwd: "./server",
 		env_production: {
 			NODE_ENV: 'production'
 		}
@@ -22,8 +26,7 @@ module.exports = {
 			ref: "origin/main",
 			repo: "git@github.com:tobiwanse/skycloud.git",
 			path: "/Users/macmini/www/test.skycloud.nu",
-			"post-deploy": "export PATH=$PATH:/usr/local/bin && cd server && npm install && pm2 startOrRestart ../ecosystem.config.js --env development",
-			//"post-deploy": "pm2 startOrRestart ecosystem.config.js --env development"
+			"post-deploy": "export PATH=$PATH:/usr/local/bin && cd server && npm install && pm2 startOrRestart ../ecosystem.config.js --env development && pm2 log"
 		},
 		production: {
 			key: "/Users/tobias/.ssh/id_rsa",
@@ -33,7 +36,7 @@ module.exports = {
 			ref: "origin/main",
 			repo: "git@github.com:tobiwanse/skycloud.git",
 			path: "/Users/macmini/www/skycloud.nu",
-			"post-deploy": 'npm install && pm2 startOrRestart ecosystem.config.js --env production'
+			"post-deploy": "export PATH=$PATH:/usr/local/bin && cd server && npm install && pm2 startOrRestart ../ecosystem.config.js --env production"
 		}
 	}
 }
