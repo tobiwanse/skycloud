@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<title>Skycloud</title>
+<link rel="icon" href="favicon.png"><script defer src="bundle.js"></script><link href="main.css" rel="stylesheet"></head>
+
+<body>
+	<div class="wrapper">
+		<div class="sidebar-panel">
+			<button type="button" class="close"></button>
+			<div class="menu">
+				<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+					<input type="radio" class="btn-check" name="menu" id="menu-jumprun" autocomplete="off" value="jumprun">
+					<label class="btn btn-secondary" for="menu-jumprun">Jumprun&nbsp;<i class="bi bi-compass"></i></label>
+					<input type="radio" class="btn-check" name="menu" id="menu-winds" autocomplete="off" value="winds">
+					<label class="btn btn-secondary" for="menu-winds">Winds&nbsp;<i class="bi bi-wind"></i></label>
+					<input type="radio" class="btn-check" name="menu" id="menu-settings" autocomplete="off" value="settings">
+					<label class="btn btn-secondary" for="menu-settings">Settings&nbsp;<i class="bi bi-gear"></i></label>
+				</div>
+			</div>
+			<div id="" class="panel jumprun-container" style="display:none;">
+				<div id="jumprun-content">
+					<div class="header">Jumprun&nbsp;<i class="bi bi-compass fs-6"></i></div>
+					<table class="settings-table">
+						<tr>
+							<td>Direction</td>
+							<td>
+								<input type='number' step="15" class='form-control form-control-sm' id='jumprun-direction' name='jumprun-settings'>
+							</td>
+
+						</tr>
+						<tr>
+							<td>Green Light (<span class="displaydistunit"></span>)</td>
+							<td>
+								<input type='number' step="0.1" class='form-control form-control-sm' id='jumprun-greenlight' name='jumprun-settings'>
+							</td>
+						</tr>
+						<tr>
+							<td>Red Light (<span class="displaydistunit"></span>)</td>
+							<td>
+								<input type='number' step="0.1" class='form-control form-control-sm' id='jumprun-redlight' name='jumprun-settings'>
+							</td>
+						</tr>
+						<tr>
+							<td>Offset (<span class="displaydistunit"></span>)</td>
+							<td>
+								<input type='number' step="0.1" class='form-control form-control-sm' id='jumprun-offset' name='jumprun-settings'>
+							</td>
+						</tr>
+						<tr>
+							<td>Separation (<span class="timeunit"></span>)</td>
+							<td>
+								<input type='number' step="1" class='form-control form-control-sm' id='jumprun-separation' name='jumprun-settings'>
+							</td>
+						</tr>
+					</table>
+					<input type="button" class="btn btn-primary" id="save-jumprun" style="width:100%" value="save">
+				</div>
+			</div>
+			<div id="winds-container" class="panel winds-container" style="display:none;">
+				<div id="winds-content" class="container">
+					<div class="header">Winds&nbsp;<i class="bi bi-wind fs-6"></i></div>
+					<div class="openmeteo-table"></div>
+					<div class="row">
+						<div class="col-5 qnh"></div>
+						<div class="col-5 qfe"></div>
+					</div>
+					<div class="widget-footer row">
+						<div class="openmeteo-valid valid-time col"></div>
+						<div class="openmeteo-cred creds col" style="text-align: right;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="panel settings-container" style="display:none;">
+				<div class="header">Units&nbsp;<i class="bi bi-sliders fs-6"></i></div>
+				<table class="settings-table">
+					<tr>
+						<td>Wind</td>
+						<td>
+							<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+								<input type="radio" class="btn-check" name="wind-units" id="wind-unit-mps" autocomplete="off" value="mps">
+								<label class="btn btn-secondary" for="wind-unit-mps">m/s</label>
+								<input type="radio" class="btn-check" name="wind-units" id="wind-unit-kt" autocomplete="off" value="kt">
+								<label class="btn btn-secondary" for="wind-unit-kt">kt</label>
+								<input type="radio" class="btn-check" name="wind-units" id="wind-unit-kmph" autocomplete="off" value="kmph">
+								<label class="btn btn-secondary" for="wind-unit-kmph">km/h</label>
+								<input type="radio" class="btn-check" name="wind-units" id="wind-unit-mph" autocomplete="off" value="mph">
+								<label class="btn btn-secondary" for="wind-unit-mph">mph</label>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Temperature</td>
+						<td>
+							<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+								<input type="radio" class="btn-check" name="temp-units" id="temp-unit-c" autocomplete="off" value="c">
+								<label class="btn btn-secondary" for="temp-unit-c">°C</label>
+								<input type="radio" class="btn-check" name="temp-units" id="temp-unit-f" autocomplete="off" value="f">
+								<label class="btn btn-secondary" for="temp-unit-f">°F</label>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Altitude</td>
+						<td>
+							<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+								<input type="radio" class="btn-check" name="alti-units" id="alti-unit-m" autocomplete="off" value="metric">
+								<label class="btn btn-secondary" for="alti-unit-m">m</label>
+								<input type="radio" class="btn-check" name="alti-units" id="alti-unit-ft" autocomplete="off" value="imperial">
+								<label class="btn btn-secondary" for="alti-unit-ft">ft</label>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Distance</td>
+						<td>
+							<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+								<input type="radio" class="btn-check" name="dist-units" id="dist-unit-km" autocomplete="off" value="metric">
+								<label class="btn btn-secondary" for="dist-unit-km">km</label>
+								<input type="radio" class="btn-check" name="dist-units" id="dist-unit-nm" autocomplete="off" value="nautical">
+								<label class="btn btn-secondary" for="dist-unit-nm">nm</label>
+								<input type="radio" class="btn-check" name="dist-units" id="dist-unit-mi" autocomplete="off" value="imperial">
+								<label class="btn btn-secondary" for="dist-unit-mi">mi</label>
+							</div>
+						</td>
+					</tr>
+				</table>
+				<hr>
+				<div class="header">Compass&nbsp;<i class="bi bi-compass fs-6"></i></div>
+				<table class='settings-table'>
+					<tr>
+						<td>Circles Count</td>
+						<td>
+							<input type='number' step="1" class='form-control form-control-sm' id='circlesCount' name='circlesCount' min='1' max='10'>
+						</td>
+					</tr>
+					<tr>
+						<td>Base Distance (<span class="displaydistunit"></span>)</td>
+						<td>
+							<input type='number' min='0' max='1' step="0.1" class='form-control form-control-sm' id='baseDistance' name='baseDistance'>
+						</td>
+					</tr>
+					<tr>
+						<td>Interval Distance (<span class="displaydistunit"></span>)</td>
+						<td>
+							<input type='number' min='0' max='1' step="0.1" class='form-control form-control-sm' id='intervalDistance' name='intervalDistance'>
+						</td>
+					</tr>
+				</table>
+				<hr>
+				<div class="header">Winds&nbsp;<i class="bi bi-wind fs-6"></i></div>
+				<table class="settings-table">
+					<tr>
+						<td>Interpolate</td>
+						<td>
+							<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+								<input type="radio" class="btn-check" name="wind-type" id="wind-type-raw" autocomplete="off" value="raw">
+								<label class="btn btn-secondary" for="wind-type-raw">Off</label>
+								<input type="radio" class="btn-check" name="wind-type" id="wind-type-int" autocomplete="off" value="int">
+								<label class="btn btn-secondary" for="wind-type-int">On</label>
+							</div>
+						</td>
+					</tr>
+				</table>
+				<div class="">Display winds&nbsp;(<span class="displayaltiunit"></span>)</div>
+				<div id="displayWinds"></div>
+				<hr>
+				<div>
+					<input type="button" id="resetmap" class="btn btn-danger" style="width:100%" value="reset">
+				</div>
+			</div>
+		</div>
+		<div id="map">
+			<div id="left-widget-wrapper">
+				<div id="widget-openmeteo" class="widgets container">
+					<div class="header">Winds&nbsp;<i class="bi bi-wind fs-6"></i></div>
+					<hr>
+					<div class="openmeteo-table"></div>
+
+					<div class="row">
+						<div class="col-5 qnh"></div>
+						<div class="col-5 qfe"></div>
+					</div>
+					<div class="widget-footer row">
+						<div class="openmeteo-valid valid-time col"></div>
+						<div class="openmeteo-cred creds col" style="text-align: right;"></div>
+					</div>
+				</div>
+			</div>
+			<div id="poi-switcher">
+				<div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+					<input type="radio" class="btn-check" name="poi-type" id="poi-type-dz" autocomplete="off" value="dropzones">
+					<label class="btn btn-secondary" for="poi-type-dz">Dropzones</label>
+					<input type="radio" class="btn-check" name="poi-type" id="poi-type-stn" autocomplete="off" value="stations">
+					<label class="btn btn-secondary" for="poi-type-stn">Stations</label>
+				</div>
+			</div>
+		</div>
+		<div id="bottom-panel"></div>
+	</div>
+</body>
+
+</html>
