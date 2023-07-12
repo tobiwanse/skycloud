@@ -2,7 +2,6 @@ module.exports = {
 	apps: [ {
 		name: "skycloud-dev",
 		script: "server.js",
-		//cwd: "./server",
 		watch: true,
 		watch_delay: 1000,
 		ignore_watch: [ "node_modules", "cumulus", ".git", "dist", ".nova" ],
@@ -10,9 +9,8 @@ module.exports = {
 			NODE_ENV: 'development'
 		}
 	},{
-		name: "skycloud",
+		name: "skycloud-prod",
 		script: "server.js",
-		//cwd: "./server",
 		env_production: {
 			NODE_ENV: 'production'
 		}
