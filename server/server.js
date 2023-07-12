@@ -23,5 +23,5 @@ app.get( '/', function ( req, res ) {
 } );
 
 app.listen( port, function ( ) {
-	console.log( 'listening on localhost:' );
+	console.log( 'listening on localhost:' + port );
 } );
