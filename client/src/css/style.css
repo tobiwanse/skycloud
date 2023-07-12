@@ -1,0 +1,212 @@
+@import "../../node_modules/ol/ol.css";
+@import "../../node_modules/ol-layerswitcher/dist/ol-layerswitcher.css";
+@import "../../node_modules/bootstrap/dist/css/bootstrap.css";
+@import "../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
+
+html,
+body {
+	margin: 0px;
+	padding: 0px;
+	height: 100%;
+	width: 100%;
+}
+
+.wrapper {
+	background-color: #000;
+	height: 100%;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	display: flex;
+	flex-flow: row wrap;
+}
+
+:root {
+	--bottom-panel-height: 200px;
+}
+
+#map {
+	height: 100%;
+	flex: 1 1 auto;
+	position: relative;
+}
+
+.sidebar-panel {
+	display: none;
+	z-index: 1;
+}
+
+.sidebar-panel.shown {
+	overflow-y: auto;
+	position: relative;
+	background-color: #fff;
+	display: block;
+	width: 400px;
+	max-width: 100vw;
+	height: 100%;
+	padding: 10px 10px 100px 20px;
+}
+
+#bottom-panel {
+	display: none;
+}
+
+#bottom-panel.shown {
+	display: block;
+	width: 100%;
+	height: var(--bottom-panel-height);
+	background-color: #FFF;
+	bottom: 0px;
+	position: absolute;
+}
+
+.darkmode-layer, .darkmode-toggle {
+  z-index: 500;
+}
+#altitude_chart {
+	float: right;
+	width: calc(100% - 5px);
+	max-width: 800px;
+	right: 5px;
+	bottom: 3em;
+	z-index: 1;
+}
+
+#altitude_chart_button {
+	background-image: url('../images/alt_legend_feet.svg');
+	background-size: cover;
+	background-color: transparent;
+	width: 100%;
+	height: 0;
+	padding: 0;
+	padding-bottom: calc(100% * 56 / 1815);
+}
+
+.altitudeMeters {
+	background-image: url('../images/alt_legend_meters.svg') !important;
+}
+.ol-mouse-position{
+	background-color: #fff;
+	z-index: 1!important;
+}
+
+.ol-zoom{
+	top: 3.5em;
+}
+.ol-control button{
+	width: 38px;
+	height: 38px;
+}
+
+.sidebar-control {
+	top: .5em;
+	left: .5em;
+	background-color: transparent;
+	z-index: 1000;
+}
+
+.sidebar-control button{
+	width: 38px;
+	height: 38px;
+  	background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-list fs-3' viewBox='0 0 16 16'><path fill-rule='evenodd' d='M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z'/></svg>");
+  	background-repeat: no-repeat;
+  	background-size: 1.8rem 1.8rem;;
+  	background-position: center;
+	z-index: 1000;
+}
+
+.panel .header{
+	font-weight: bold;
+}
+
+.sidebar-panel.shown .close{
+	position: absolute;
+	width: 38px;
+	height: 38px;
+	top: .5em;
+	right: .5em;
+	background-color: transparent;
+	outline: none;
+	border:none;
+  	background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x-circle' viewBox='0 0 16 16'><path d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/><path d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/></svg>");
+  	background-repeat: no-repeat;
+  	background-size: 2.2rem 2.2rem;
+  	background-position: center;
+}
+
+.sidebar-panel .menu{
+	margin: 20px 0px 40px 0px;
+}
+
+.sidebar-panel .active{
+	display: block!important;
+}
+
+.icon-flipped::before {
+	transform: scaleX(-1);
+	-moz-transform: scaleX(-1);
+	-webkit-transform: scaleX(-1);
+	-ms-transform: scaleX(-1);
+}
+
+.settings-table{
+	table-layout: fixed;
+	width:100%;
+	margin-bottom: 1.5em;
+}
+
+.layer-switcher button {
+  display: inline-block;
+  content: "";
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-stack' viewBox='0 0 16 16'><path d='m14.12 10.163 1.715.858c.22.11.22.424 0 .534L8.267 15.34a.598.598 0 0 1-.534 0L.165 11.555a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0l5.317-2.66zM7.733.063a.598.598 0 0 1 .534 0l7.568 3.784a.3.3 0 0 1 0 .535L8.267 8.165a.598.598 0 0 1-.534 0L.165 4.382a.299.299 0 0 1 0-.535L7.733.063z'/><path d='m14.12 6.576 1.715.858c.22.11.22.424 0 .534l-7.568 3.784a.598.598 0 0 1-.534 0L.165 7.968a.299.299 0 0 1 0-.534l1.716-.858 5.317 2.659c.505.252 1.1.252 1.604 0l5.317-2.659z'/></svg>");
+  background-repeat: no-repeat;
+  background-size: 1.5rem 1.5rem;;
+  background-position: center;
+}
+
+.widget-footer{
+	margin-top: 10px;
+	font-size:10px;
+}
+
+.widget-footer a{
+	text-decoration:none;
+	color: revert;
+	color: black;
+}
+
+.tf.tf-mountain{
+	font-size:1rem !important;
+	display: inline-block;
+	content: url("data:image/svg+xml,<svg width='16' height='16' version='1.1' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'><path d='m8.7502 4.8685c-1.679 4.6163-1.7701 4.858-1.8203 4.7708-.028246-.051402-.60262-1.2299-1.271-2.6143-.67168-1.3895-1.2491-2.5835-1.29-2.6606l-.069062-.13895-2.1435 5.5886c-1.1801 3.0724-2.1499 5.6044-2.1561 5.6301-.0062041.025702.10041.15956.23216.29851l.24474.25728.06596-.16465c.037714-.092631.5587-1.4513 1.1611-3.0209.59951-1.5696 1.1079-2.882 1.1267-2.9179.025144-.046316.10351.13895.31706.75658.1569.45298.29192.82351.30123.82351.01257 0 .22906-.37052.48017-.82351.2542-.45298.4707-.82351.48016-.82351.00947 0 .24163.34991.51788.77719l.50221.77719.2542-.45298c.14123-.25219.33274-.59193.43004-.75658l.17257-.29342.36098.73596c.19772.40667.57747 1.1528.84115 1.6521.48017.9057.48017.9057.55233.81815.20392-.26772.36408-.50438.36408-.53517 0-.02061-.22596-.46824-.50221-.99833-.27625-.53008-.50221-.98307-.50221-1.0139 0-.04632 1.1989-3.4016 1.2491-3.4892.00621-.015529.21976.3293.4707.76166l.46139.78736.39233-.85938c.21665-.47333.408-.89552.42678-.94184.03135-.061844.13176.066929.62776.80289.32637.48377.60572.88508.62139.89552.01567.010173.16327-.28298.32327-.64842.16327-.37052.3138-.69982.33584-.73596.03135-.056489.32637.75122 1.6069 4.3847.85992 2.4496 1.5786 4.4516 1.5912 4.4567.034594 0 .49274-.43237.49274-.46824 0-.015529-.68425-1.971-1.5221-4.3486-.83804-2.3731-2.062-5.8518-2.7243-7.7251-.6591-1.8783-1.2083-3.4121-1.2176-3.4121-.009469 0-.816 2.1924-1.7858 4.8685zm2.5045-.93166c.37666 1.0757.70302 2.002.7218 2.0636.03135.092631.0062.16973-.16947.56623-.11298.25219-.21649.46316-.23233.47333-.02514.015529-.3169-.40131-1.1329-1.6261l-.08474-.12342-.41747.9057-.42057.9057-.26678-.4736c-.14759-.25728-.26367-.48886-.2604-.51456.031348-.16465 1.5316-4.2045 1.5504-4.1737.01257.020882.33274.92149.71249 1.9969zm-5.3605 5.167c-.00309.015529-.11298.22649-.248.46824l-.248.43237-1.0136-1.5798-.090939.14403c-.053387.082457-.23216.39622-.40163.70491-.16637.30359-.3138.55579-.32327.55579-.022042 0-.34204-.90061-.34204-.95201 0-.025702.62776-1.6778.99494-2.6143l.13812-.355.76898 1.5852c.42025.86955.76539 1.5953.76539 1.6106z' style='stroke-width:.0020907'/></svg>");
+}
+
+.ol-scale-bar.hidden{
+	display:none;
+}
+
+#left-widget-wrapper{
+	display:none;
+}
+
+#left-widget-wrapper.shown{
+	display: block;
+	position: absolute;
+	left: .5em;
+	overflow-x: hidden;
+	z-index:1;
+	height: calc(100% - var(--bottom-panel-height));
+}
+
+.widgets{
+	margin: 20px 0px 0px 10px;
+	padding: 10px 10px 10px 20px;
+	background-color: rgba(255, 255, 255, 1);
+	width: 400px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.openmeteo-table{
+	margin-bottom: 15px;
+}
