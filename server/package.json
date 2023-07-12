@@ -2,7 +2,7 @@
   "name": "skycloud",
   "version": "1.0.0",
   "description": "Skycloud Server",
-  "main": "./server.js",
+  "main": "./server/server.js",
   "scripts": {
     "dev": "pm2 startOrRestart ecosystem.config.js pm2 log",
     "build": "pm2 startOrRestart ecosystem.config.js"
