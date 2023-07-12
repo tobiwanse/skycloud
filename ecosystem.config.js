@@ -1,7 +1,7 @@
 module.exports = {
 	apps: [ {
 		name: "skycloud",
-		script: "./server.js",
+		script: "./server/server.js",
 		watch: true,
 		watch_delay: 1000,
 		ignore_watch: [ "node_modules", "cumulus", ".git", "dist", ".nova" ],
@@ -21,7 +21,7 @@ module.exports = {
 			ref: "origin/main",
 			repo: "git@github.com:tobiwanse/skycloud-server.git",
 			path: "/Users/macmini/www/test.skycloud.nu",
-			"post-deploy": "export PATH=$PATH:/usr/local/bin && cd server && npm install && pm2 startOrRestart ../ecosystem.config.js --env development"
+			"post-deploy": "export PATH=$PATH:/usr/local/bin && cd server && npm install && cd .. && pm2 startOrRestart ecosystem.config.js --env development"
 		},
 		production: {
 			key: "/Users/tobias/.ssh/id_rsa",
