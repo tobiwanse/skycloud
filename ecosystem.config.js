@@ -22,7 +22,8 @@ module.exports = {
 			ref: "origin/main",
 			repo: "git@github.com:tobiwanse/skycloud.git",
 			path: "/Users/macmini/www/test.skycloud.nu",
-			"post-deploy": "export PATH=$PATH:/usr/local/bin && npm install && ls -a && pm2 startOrRestart ecosystem.config.js --env development"
+			"post-deploy": "export PATH=$PATH:/usr/local/bin && npm install",
+			"post-deploy": "pm2 startOrRestart ecosystem.config.js --env development"
 		},
 		production: {
 			key: "/Users/tobias/.ssh/id_rsa",
