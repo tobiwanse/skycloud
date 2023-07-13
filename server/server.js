@@ -3,7 +3,7 @@ const path = require('path');
 const app = express( );
 const cors = require('cors');
 
-require('dotenv').config({path: path.join( __dirname, '../env' )});
+require('dotenv').config({path: path.join( __dirname, '../.env' )});
 
 const port = process.env.port;
 const host = process.env.host;
