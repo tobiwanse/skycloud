@@ -15,13 +15,13 @@ export const CreateLayer = function (name, title, type, visible) {
 	let featureCollection = CreateFeature(type);
 	layer[type] = new VectorLayer( {
 		name: name,
-		title: title,
+		//title: title,
 		visible: visible,
 		source: new VectorSource( {
 			features: featureCollection,
 		} ),
 		zIndex:10,
-	} )
+	})
 	return layer[type];
 }
 export const getLayer = (type) => {

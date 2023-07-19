@@ -55,11 +55,12 @@ export const CreatePoiLayerGroup = () => {
 	PoiLayerCollection.push(POI.CreateLayer('dropzones', 'Dropzones', 'dropzone', true));
 	PoiLayerCollection.push(POI.CreateLayer('stations', 'Stations', 'cumulus', true));
 	const layer = new LayerGroup({
+		displayInLayerSwitcher: false,
 		name: 'poi',
-		title: 'Point of intrests',
-		fold: 'open',
-		layers: PoiLayerCollection,
-	});
+		//title: 'Point of intrests',
+		//fold: 'open',
+		layers: PoiLayerCollection
+	} );
 	return layer;
 }
 const CreateGoogleMapsLayers = ( map ) => {

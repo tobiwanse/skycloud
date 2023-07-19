@@ -23,7 +23,7 @@ DefaultFilterWindsImperial = "1000,2000,3000,4000,5000,6000,7000,8000,9000,10000
 DefaultFilterWindsMetric = "300,600,900,1200,1500,1800,2100,2400,2700,3000,3300,3600,3900,4200,4500,4800,5100,5400,5700,6000";
 DefaultDisplayZoomLvl = null;
 DefaultDisplayLayers = 'poi';
-DefaultPoiType = 'dz';
+DefaultPoiType = 'dropzones';
 
 CenterLon = null;
 CenterLat = null;
@@ -67,6 +67,7 @@ DisplaySidebar = false;
 DisplaySelectedPanel = null;
 DisplayZoomLvl = null;
 DisplayLayers = null;
+DisplayPoiLayer = null;
 
 CompassCirclesCount = null;
 CompassCirclesBaseDistance = null;
