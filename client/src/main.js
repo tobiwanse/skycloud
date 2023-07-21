@@ -557,9 +557,9 @@ const setSelectedPointOfIntrest = ( id ) => {
 const setJumprun = ( data ) => {
 	Jumprun = {
 		direction: isNaN( parseInt( data.direction ) ) ? '' : Number( data.direction ),
-		greenlight: isNaN( parseInt( data.greenlight ) ) ? '' : Number( data.greenlight ),
-		redlight: isNaN( parseInt( data.redlight ) ) ? '' : Number( data.redlight ),
-		offset: isNaN( parseInt( data.offset ) ) ? '' : Number( data.offset ),
+		greenlight: isNaN( parseInt( data.greenlight ) ) ? '' : Number( data.greenlight ).toFixed(4),
+		redlight: isNaN( parseInt( data.redlight ) ) ? '' : Number( data.redlight ).toFixed(4),
+		offset: isNaN( parseInt( data.offset ) ) ? '' : Number( data.offset ).toFixed(4),
 		separation: isNaN( parseInt( data.separation ) ) ? '' : Number( data.separation ),
 		timestamp: data.timestamp
 	}
