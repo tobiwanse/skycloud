@@ -2,7 +2,7 @@ module.exports = {
 	apps: [{
 		name: "skycloud",
 		script: "server.js",
-		cwd: "./server"
+		cwd: "./server",
 		env_production: {
 			NODE_ENV: 'production'
 		}
