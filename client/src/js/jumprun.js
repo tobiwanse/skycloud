@@ -129,7 +129,7 @@ const LineFeatures = () => {
 				} ),
 				text: new Text( {
 					font: '5px Helvetica Neue, sans-serif',
-					text: Func.convert_distance_km(Jumprun.greenlight.toFixed(2), DisplayDistUnit) + Func.get_unit_label('distance', DisplayDistUnit),
+					text: Func.convert_distance_km( Number(Jumprun.greenlight).toFixed(2), DisplayDistUnit) + Func.get_unit_label('distance', DisplayDistUnit),
 					fill: new Fill( {
 						color: '#FFFFFF',
 					} ),
@@ -144,6 +144,7 @@ const LineFeatures = () => {
 				zIndex: 40
 			})
 		);
+
 		styles.push(
 			new Style({
 				geometry: (feature) => {
@@ -156,7 +157,7 @@ const LineFeatures = () => {
 				} ),
 				text: new Text( {
 					font: '5px Helvetica Neue, sans-serif',
-					text: Func.convert_distance_km(Jumprun.redlight.toFixed(2), DisplayDistUnit) + Func.get_unit_label('distance', DisplayDistUnit),
+					text: Func.convert_distance_km( Number(Jumprun.redlight).toFixed(2), DisplayDistUnit) + Func.get_unit_label('distance', DisplayDistUnit),
 					fill: new Fill( {
 						color: '#FFFFFF',
 					} ),
@@ -175,6 +176,7 @@ const LineFeatures = () => {
 	})
 	JumprunFeatures.push(feature);
 }
+
 const CreateFeatures = () => {
 	JumprunFeatures.clear();
 	if(typeof Jumprun.direction === 'undefined' || Jumprun.direction === "" ){

@@ -33,7 +33,7 @@ export const convert_distance_km = function ( dist, displayUnits ) {
 	}
 
 	if ( displayUnits === "metric" ) {
-		return (dist*1).toFixed(2); // km to km
+		return ( dist * 1 ).toFixed(2); // km to km
 	} else if ( displayUnits === "imperial" ) {
 		return ( dist * 0.621371192 ).toFixed(2); // km to miles
 	}else if( displayUnits === "nautical" ){

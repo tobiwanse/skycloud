@@ -165,7 +165,7 @@ const getWinds = ( lonlat, hour = 0 ) => {
 		console.log( "Succes getting winds! " + seconds + "s" );
 	} )
 	FetchWindsPending.fail( function ( res ) {
-		console.warn( "Error getting winds!" );
+		console.warn( "Error getting winds!" , res);
 	} )
 	return FetchWindsPending;
 };
@@ -555,17 +555,19 @@ const setSelectedPointOfIntrest = ( id ) => {
 	SelectedPointOfIntrest = localStorage[ "SelectedPointOfIntrest" ] = id;
 }
 const setJumprun = ( data ) => {
+
 	Jumprun = {
-		direction: isNaN( parseInt( data.direction ) ) ? '' : Number( data.direction ),
-		greenlight: isNaN( parseInt( data.greenlight ) ) ? '' : Number( data.greenlight ).toFixed(4),
-		redlight: isNaN( parseInt( data.redlight ) ) ? '' : Number( data.redlight ).toFixed(4),
-		offset: isNaN( parseInt( data.offset ) ) ? '' : Number( data.offset ).toFixed(4),
-		separation: isNaN( parseInt( data.separation ) ) ? '' : Number( data.separation ),
+		direction: isNaN( parseInt( data.direction ) ) ? '' : Number(data.direction),
+		greenlight: isNaN( parseInt( data.greenlight ) ) ? '' : Number(data.greenlight).toFixed(4),
+		redlight: isNaN( parseInt( data.redlight ) ) ? '' : Number(data.redlight).toFixed(4),
+		offset: isNaN( parseInt( data.offset ) ) ? '' : Number(data.offset).toFixed(4),
+		separation: isNaN( parseInt( data.separation ) ) ? '' : Number(data.separation),
 		timestamp: data.timestamp
 	}
 
+
 	var direction = Jumprun.direction || '--';
-	var greenlight = Func.convert_distance_km( parseInt( data.greenlight ), DisplayDistUnit ) || '--'; //km to DisplayDistUnit
+	var greenlight = Func.convert_distance_km( data.greenlight, DisplayDistUnit ) || '--'; //km to DisplayDistUnit
 	var redlight = Func.convert_distance_km( data.redlight, DisplayDistUnit ) || '--'; //km to DisplayDistUnit
 	var offset = Func.convert_distance_km( data.offset, DisplayDistUnit ) || '--'; //km to DisplayDistUnit
 	var separation = data.separation || '--';
@@ -586,30 +588,35 @@ const setJumprun = ( data ) => {
 	JUMPRUN.update( );
 }
 const setJumprunSettings = ( ) => {
+	var direction = Jumprun.direction;
+
 	var greenlight = Func.convert_distance_km( Jumprun.greenlight, DisplayDistUnit ); //km to DisplayDistUnit
 	var redlight = Func.convert_distance_km( Jumprun.redlight, DisplayDistUnit ); //km to DisplayDistUnit
 	var offset = Func.convert_distance_km( Jumprun.offset, DisplayDistUnit ); //km to DisplayDistUnit
-	$( '#jumprun-direction' ).val( Jumprun.direction );
+	var separation = Jumprun.separation;
+
+	$( '#jumprun-direction' ).val( direction );
 	$( '#jumprun-greenlight' ).val( greenlight );
 	$( '#jumprun-redlight' ).val( redlight );
 	$( '#jumprun-offset' ).val( offset );
-	$( '#jumprun-separation' ).val( Jumprun.separation );
+	$( '#jumprun-separation' ).val( separation );
 }
+
 const onChangeJumprunSettings = ( event ) => {
 	clearInterval( FetchJumprunTimer );
 	if ( event.target.id === 'jumprun-direction' ) {
 		if ( event.target.value > 360 ) event.target.value = 15;
 		if ( event.target.value < 0 ) event.target.value = 345;
 	}
-	var direction = $( '#jumprun-direction' ).val( ) ? Number( $( '#jumprun-direction' ).val( ) ) : "";
-	var greenlight = $( '#jumprun-greenlight' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-greenlight' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
-	var redlight = $( '#jumprun-redlight' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-redlight' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
-	var offset = $( '#jumprun-offset' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-offset' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
-	var separation = $( '#jumprun-separation' ).val( ) ? Number( $( '#jumprun-separation' ).val( ) ) : "";
-	var timestamp = Math.floor( Date.now( ) );
+	//var direction = $( '#jumprun-direction' ).val( ) ? Number( $( '#jumprun-direction' ).val( ) ) : "";
+	//var greenlight = $( '#jumprun-greenlight' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-greenlight' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
+	//var redlight = $( '#jumprun-redlight' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-redlight' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
+	//var offset = $( '#jumprun-offset' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-offset' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
+	//var separation = $( '#jumprun-separation' ).val( ) ? Number( $( '#jumprun-separation' ).val( ) ) : "";
+	//var timestamp = Math.floor( Date.now( ) );
 	var data = {};
 
-	data.direction = direction;
+	data.direction = $( '#jumprun-direction' ).val( );
 	data.greenlight = greenlight;
 	data.redlight = redlight;
 	data.offset = offset;
