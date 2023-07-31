@@ -18,7 +18,7 @@ module.exports = {
 			repo: "git@github.com:tobiwanse/skycloud.git",
 			path: "/Users/macmini/www/skycloud.nu",
 			"pre-setup" : "npm install -g pm2@latest",
-			"post-deploy": "echo $PATH && echo $0 $$ npm install && pm2 startOrRestart ecosystem.config.js --env production --time && pm2 save && pm2 log"
+			"post-deploy": "echo $PATH && echo $0 && npm install && pm2 startOrRestart ecosystem.config.js --env production --time && pm2 save && pm2 log"
 		}
 	}
 }
