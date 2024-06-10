@@ -2,9 +2,11 @@ const webpack = require( 'webpack' );
 const path = require( 'path' );
 const HtmlWebpackPlugin = require( 'html-webpack-plugin' );
 const MiniCssExtractPlugin = require( "mini-css-extract-plugin" );
+const CopyPlugin = require("copy-webpack-plugin");
+
 module.exports = {
 	entry: [
-		'./src/main.js',
+		'./src/main.js'
 	],
 	watch: true,
 	watchOptions: {
@@ -16,6 +18,11 @@ module.exports = {
 		maxAssetSize: 512000
 	},
 	plugins: [
+		new CopyPlugin({
+		  patterns: [
+			{ from: "src/skyaware/flags-tiny", to: "flags-tiny" },
+		  ],
+		}),
 		new MiniCssExtractPlugin(),
 		new HtmlWebpackPlugin( {
 			title: 'Skycloud',

@@ -15,7 +15,7 @@ export const CreateLayer = function (name, title, type, visible) {
 	let featureCollection = CreateFeature(type);
 	layer[type] = new VectorLayer( {
 		name: name,
-		//title: title,
+		title: title,
 		visible: visible,
 		source: new VectorSource( {
 			features: featureCollection,
@@ -77,12 +77,12 @@ const DropPin = (type = 'droped') => {
 	} )
 	return layer[type];
 
-	let featureCollection = new Collection();
-	const feature = new Feature({ geometry: PointGeometry(index), id: element.id });
-	feature.setStyle( (feature, resolution) => {
-		return style(index, element);
-	});
-	featureCollection.push(feature);
+	// let featureCollection = new Collection();
+	// const feature = new Feature({ geometry: PointGeometry(index), id: element.id });
+	// feature.setStyle( (feature, resolution) => {
+	// 	return style(index, element);
+	// });
+	// featureCollection.push(feature);
 }
 const CreateFeature = (type) => {
 	let featureCollection = new Collection();

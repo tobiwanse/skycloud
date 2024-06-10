@@ -36,14 +36,19 @@ PoiType = null;
 BaseLayers = null;
 BaseOverLayers = null;
 PoiLayers = null;
+AircraftLayers = null;
+AcLayers = null;
+
 BaseLayerCollection = null;
 OverLayerCollection = null;
 PoiLayerCollection = null;
+AircraftLayerCollection = null;
 
 CompassFeatures = null;
 POIMarkersFeatures = null;
 WindsFeatures = null;
 JumprunFeatures = null;
+PlaneIconFeatures = null;
 
 PointsOfIntrest = [];
 PointOfIntrest = {};
@@ -51,6 +56,7 @@ SelectedPointOfIntrest = null;
 Extent = [];
 Winds = {};
 Jumprun = {};
+Aircrafts = [];
 
 FilterWindsImperial = null;
 FilterWindsMetric = null;

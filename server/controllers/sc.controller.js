@@ -1,7 +1,8 @@
 const POI = require( "../models/poi.model.js" );
-const Jumprun = require( "../models/jr.model.js" );
+const JUMPRUN = require( "../models/jumprun.model.js" );
 const OPENMETEO = require( "../models/openmeteo.model.js" );
 const CUMULUS = require( "../models/cumulus.model.js" );
+const SKYAWARE = require( "../models/skyaware.model.js" );
 const path = require( 'path' );
 const fs = require( 'fs' );
 const formidable = require( 'formidable' );
@@ -21,7 +22,10 @@ exports.getOpenMeteo = ( req, res ) => {
 	} );
 }
 exports.getJumprun = ( req, res ) => {
-	Jumprun.getJumprun( req.params.id, ( err, data ) => {
+	const jumprun = new JUMPRUN( req.params.id );
+	
+	jumprun.getJumprun( req.params.id, ( err, data ) => {
+		
 		if ( err ) {
 			if ( err.kind === "not_found" ) {
 				console.log( 'not_found' );
@@ -110,8 +114,7 @@ exports.putPoi = ( req, res ) => {
 			message: "Content can not be empty!"
 		} );
 	}
-	POI.updatePoi(
-		req.params.id,
+		POI.updatePoi( req.params.id,
 		new POI( req.body ),
 		( err, data ) => {
 			if ( err ) {
@@ -125,11 +128,28 @@ exports.putPoi = ( req, res ) => {
 					} );
 				}
 			} else res.send( data );
-		}
-	);
+		} );
 };
-exports.getCumulus = ( req, res ) => {
-	CUMULUS.getWindData( req.params.id, ( err, data ) => {
+exports.windChartData = ( req, res ) => {
+	const cumulus = new CUMULUS;
+	
+	cumulus.windChartData( req.params.id, ( err, data ) => {
+		
+		if ( err ) {
+			if ( err.kind === "not_found" ) {
+				res.status( 404 ).send( {
+					message: "Not found windChartData with id."
+				} );
+			} else {
+				res.status( 500 ).send( {
+					message: "Error retrieving windChartData"
+				} );
+			}
+		} else res.send( data );
+	} );
+}
+exports.windData = ( req, res ) => {
+	CUMULUS.windData( req.params.id, ( err, data ) => {
 		if ( err ) {
 			if ( err.kind === "not_found" ) {
 				res.status( 404 ).send( {
@@ -142,6 +162,52 @@ exports.getCumulus = ( req, res ) => {
 			}
 		} else res.send( data );
 	} );
+}
+exports.wDirData = ( req, res ) => {
+	CUMULUS.wDirData( req.params.id, ( err, data ) => {
+		if ( err ) {
+			if ( err.kind === "not_found" ) {
+				res.status( 404 ).send( {
+					message: "Request wdirdata not found."
+				} );
+			} else {
+				res.status( 500 ).send( {
+					message: "Error retrieving wdirdata"
+				} );
+			}
+		} else res.send( data );
+	} );
+}
+exports.getCumulus = ( req, res ) => {
+	
+	// CUMULUS.getWindData( req.params.id, ( err, data ) => {
+	// 	if ( err ) {
+	// 		if ( err.kind === "not_found" ) {
+	// 			res.status( 404 ).send( {
+	// 				message: `Not found cumulus with id ${req.params.id}.`
+	// 			} );
+	// 		} else {
+	// 			res.status( 500 ).send( {
+	// 				message: "Error retrieving cumulus with id " + req.params.id
+	// 			} );
+	// 		}
+	// 	} else res.send( data );
+	// })
+	
+	// CUMULUS.get( req.params.id, ( err, data ) => {
+	// 	if ( err ) {
+	// 		if ( err.kind === "not_found" ) {
+	// 			res.status( 404 ).send( {
+	// 				message: `Not found cumulus with id ${req.params.id}.`
+	// 			} );
+	// 		} else {
+	// 			res.status( 500 ).send( {
+	// 				message: "Error retrieving cumulus with id " + req.params.id
+	// 			} );
+	// 		}
+	// 	} else res.send( data );
+	// } );
+	
 }
 exports.putCumulus = ( req, res ) => {
 	var uploadDir = path.join( __dirname, `../cumulus/${req.params.id}` );
@@ -183,5 +249,35 @@ exports.putCumulus = ( req, res ) => {
 				res.send( data );
 			}
 		} );
+	} );
+}
+exports.getSkyawareReciever = ( req, res ) => {
+	const skyaware = new SKYAWARE;
+	skyaware.getReceiver( ( err, data ) => {
+		if ( err )
+			res.status( 500 ).send( {
+				message: err.message || "Some error occurred while retrieving skyaware receiver."
+			} );
+		else res.send( data );
+	} );
+}
+exports.getSkyawareAircraft = ( req, res ) => {
+	const skyaware = new SKYAWARE;
+	skyaware.getAircraft( ( err, data ) => {
+		if ( err )
+			res.status( 500 ).send( {
+				message: err.message || "Some error occurred while retrieving skyaware aircraft."
+			} );
+		else res.send( data );
+	} );
+}
+exports.getSkyawareDb = ( req, res ) => {
+	const skyaware = new SKYAWARE;
+	skyaware.getDb( req.params.id, ( err, data ) => {
+		if ( err )
+			res.status( 500 ).send( {
+				message: err.message || "Some error occurred while retrieving skyaware db."
+			} );
+		else res.send( data );
 	} );
 }

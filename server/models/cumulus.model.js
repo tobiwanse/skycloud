@@ -1,45 +1,106 @@
 const sql = require( './db.js' );
+const axios = require( 'axios' );
 const path = require('path');
 const fs = require('fs');
-const CUMULUS = function ( id, req, file, result ) {
-	this.tmpFile = file.filepath;
-	this.uploadDir = path.join( __dirname, `../cumulus/${id}` );
-	this.file = req.headers.file;
-	this.ts = req.headers.ts;
-	this.signature = req.headers.signature;
-	this.action = req.headers.action;
-	this.binary = req.headers.binary;
-	this.utf8 = req.headers.uf8;
-	this.oldestTs = req.headers.oldest;
+require('dotenv').config({path: path.join( __dirname, '../../.env' )});
+
+function CUMULUS ( id, req, file, result ) {
+	this.cumulus_url = process.env.cumulus_url;
 }
 
-CUMULUS.getWindData = (id, result) => {
-	const dir = path.join( __dirname, `../cumulus/${id}` );
-	var data = {};
-	if (!fs.existsSync(dir)) {
-		return result(null, data);
-	}
-	try{
-		var wdata = JSON.parse(fs.readFileSync(dir+'/winddata.json', "utf8"));
-		var wdirdata = JSON.parse(fs.readFileSync(dir+'/wdirdata.json', "utf8"));
-		var realtimegauges = JSON.parse(fs.readFileSync(dir+'/realtimegauges.txt', "utf8"));
-		var data = {
-			wchart: {
-				wspeed: wdata.wspeed,
-				wgust: wdata.wgust,
-				bearing: wdirdata.bearing,
-				avgbearing: wdirdata.avgbearing
-			},
-			realtime: realtimegauges
-		}
-		return result(null, data);
-	} catch(err) {
-		console.log(err)
-		return result(null, {});
-	}
+CUMULUS.prototype.windChartData = ( id, result ) => {
+	const cumulus_url = process.env.cumulus_url;
+	
+	const urls = [
+		`${cumulus_url}graphdata/winddata.json`,
+		`${cumulus_url}graphdata/wdirdata.json`
+	];
+	
+	const requests = urls.map((url) => axios.get( url ));
+	
+	let obj = {};
+	
+	axios.all(requests).then((responses) => {
+		responses.forEach((resp) => {
+			let msg = {
+				server: resp.headers.server,
+				status: resp.status,
+				fields: Object.keys(resp.data).toString(),
+			};
+			
+			Object.keys(resp.data).forEach(key => obj[key] = resp.data[key]);
+			
+		});
+		result(null, obj);
+	});
+	
+	
 }
+CUMULUS.prototype.windData = ( result ) => {
+	const url = 'http://172.19.1.67:8998/api/graphdata/winddata.json';
+	axios.get(url, {timeout:5000})
+		.then(function (response) {
+			console.log(response.data);
+			result( null, response.data );
+		})
+		.catch(function (error) {			
+			console.log( 'Could not get wind chart data.', error.message );
+			result( error, null );
+		})
+		.then(function () {
+			
+		});
+};
 
-CUMULUS.update = (data, result) => {
+CUMULUS.prototype.wDirData = ( result ) => {
+	const url = 'http://172.19.1.67:8998/api/graphdata/wdirdata.json';
+	
+	axios.get(url, {timeout:5000})
+		.then(function (response) {
+			console.log(response.data);
+			result( null, response.data );
+		})
+		.catch(function (error) {			
+			console.log( 'Could not get wind chart data.', error.message );
+			result( error, null );
+		})
+		.then(function () {
+			
+		});
+};
+
+// CUMULUS.getWindData = (id, result) => {
+// 	console.log('getWindData');
+// 	
+// 	const dir = path.join( __dirname, `../cumulus/${id}` );
+// 	var data = {};
+// 	
+// 	
+// 	if (!fs.existsSync(dir)) {
+// 		return result(null, data);
+// 	}
+// 	try{
+// 		var wdata = JSON.parse(fs.readFileSync(dir+'/winddata.json', "utf8"));
+// 		var wdirdata = JSON.parse(fs.readFileSync(dir+'/wdirdata.json', "utf8"));
+// 		var realtimegauges = JSON.parse(fs.readFileSync(dir+'/realtimegauges.txt', "utf8"));
+// 		var data = {
+// 			wchart: {
+// 				wspeed: wdata.wspeed,
+// 				wgust: wdata.wgust,
+// 				bearing: wdirdata.bearing,
+// 				avgbearing: wdirdata.avgbearing
+// 			},
+// 			realtime: realtimegauges
+// 		}
+// 		return result(null, data);
+// 	} catch(err) {
+// 		console.log(err)
+// 		return result(null, {});
+// 	}
+// 	
+// }
+
+CUMULUS.prototype.update = ( data, result ) => {
 	var cwd = data.uploadDir+'/'+data.file;
 	if(data.file == 'winddata.json'){
 		var winddata = fs.readFileSync(data.tmpFile);

@@ -4,8 +4,8 @@
   "description": "Skycloud Server",
   "main": "server.js",
   "scripts": {
-    "dev": "pm2 startOrRestart ecosystem.config.js pm2 log",
-    "build": "pm2 startOrRestart ecosystem.config.js"
+    "dev": "pm2 startOrRestart ../ecosystem.config.js --watch pm2 log",
+    "build": "pm2 startOrRestart ../ecosystem.config.js"
   },
   "author": "",
   "license": "ISC",

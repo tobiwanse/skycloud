@@ -19,10 +19,12 @@ import * as COMPASS from './compass';
 import * as JUMPRUN from './jumprun';
 import * as WINDS from './winds';
 import * as POI from './poi';
+import * as AIRCRAFT from './aircraft';
 
 BaseLayerCollection = new Collection();
 OverLayerCollection = new Collection();
 PoiLayerCollection = new Collection();
+AircraftLayerCollection = new Collection();
 
 export const CreateBaseLayerGroup = ( map ) => {
 	BaseLayerCollection.push(CreateOsmLayer());
@@ -43,6 +45,8 @@ export const CreateOverLayerGroup = () => {
 	OverLayerCollection.push(COMPASS.CreateLayer());
 	OverLayerCollection.push(JUMPRUN.CreateLayer());
 	OverLayerCollection.push(WINDS.CreateLayer());
+	//OverLayerCollection.push(AIRCRAFT.CreateLayer());
+	
 	const layer = new LayerGroup({
 		name: 'overlays',
 		title: 'Overlays',
@@ -55,8 +59,7 @@ export const CreatePoiLayerGroup = () => {
 	PoiLayerCollection.push(POI.CreateLayer('dropzones', 'Dropzones', 'dropzone', true));
 	PoiLayerCollection.push(POI.CreateLayer('stations', 'Stations', 'cumulus', true));
 	const layer = new LayerGroup({
-		displayInLayerSwitcher: false,
-		name: 'poi',
+		//name: 'poi',
 		//title: 'Point of intrests',
 		//fold: 'open',
 		layers: PoiLayerCollection
@@ -73,7 +76,6 @@ const CreateGoogleMapsLayers = ( map ) => {
 		BaseLayerCollection.push(CreateGMapLayer(gMaps[i]));
 	}
 }
-
 const CreateGMapLayer = function(mapType){
 	return new LayerTile({
 		name: mapType.name,
@@ -112,7 +114,6 @@ const CreateOsmLayer = function(){
 		})
 	});
 }
-
 const CreateLfvGeoJsonLayer = function(map){
 	const geojson = new GeoJSON({
 		dataProjection: 'EPSG:4326',
@@ -123,7 +124,7 @@ const CreateLfvGeoJsonLayer = function(map){
 		name: 'lfv',
 		title: 'LFV SE',
 		type: 'overlay',
-		visible: false,
+		visible: true,
 		source: new VectorSource({
 			features: geojson
 		}),
@@ -152,7 +153,6 @@ const CreateLfvGeoJsonLayer = function(map){
 		}
 	})
 }
-
 const LfvGeoJsonLayerHoverStyle = function(feature){
 	return new Style({
 		fill: new Fill({
@@ -177,7 +177,6 @@ const LfvGeoJsonLayerHoverStyle = function(feature){
 		zIndex:10
 	})
 }
-
 const CreateGraticuleLayer = function(){
 	return new Graticule({
 		name: "graticule",
@@ -193,7 +192,6 @@ const CreateGraticuleLayer = function(){
 		wrapX: false,
 	});
 }
-
 export const CreateWindMarker = (lonlat) => {
 	const feature = new Feature({geometry: new Point(Proj.fromLonLat(lonlat)), name: 'windmarkers'});
 

@@ -1,6 +1,6 @@
 const sql = require( './db.js' );
 
-const Jumprun = function ( jr ) {
+const JUMPRUN = function ( jr ) {
 	this.direction = jr.direction;
 	this.greenlight = jr.greenlight;
 	this.redlight = jr.redlight;
@@ -9,7 +9,7 @@ const Jumprun = function ( jr ) {
 	this.timestamp = jr.timestamp;
 }
 
-Jumprun.getJumprun = ( id, result ) => {
+JUMPRUN.prototype.getJumprun = ( id, result ) => {
 	sql.query( `SELECT jumprun FROM pointofintrests WHERE id = ${id}`, ( err, res, fields ) => {
 		if ( err ) {
 			console.log( "error: ", err );
@@ -26,9 +26,8 @@ Jumprun.getJumprun = ( id, result ) => {
 	} );
 };
 
-Jumprun.updateJumprun = ( id, data, result ) => {
+JUMPRUN.updateJumprun = ( id, data, result ) => {
 	data = JSON.stringify(data);
-	console.log(data);
 	sql.query(
 		"UPDATE pointofintrests SET jumprun = ? WHERE id = ?",
 		[ data, id ],
@@ -47,4 +46,4 @@ Jumprun.updateJumprun = ( id, data, result ) => {
 		}
 	);
 };
-module.exports = Jumprun;
+module.exports = JUMPRUN;

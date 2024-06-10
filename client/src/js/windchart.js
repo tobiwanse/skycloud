@@ -39,9 +39,9 @@ WindChart.prototype.getConfig = function(){
 			x: 10,
 		},
 		credits: {
-			enabled: false,
-			text: 'Forecast from <a href="https://yr.no">yr.no</a>',
-			href: 'https://yr.no',
+			enabled: true,
+			text: 'FKAROS local station',
+			href: '',
 			position: {
 				x: -40
 			}
@@ -131,9 +131,9 @@ WindChart.prototype.getConfig = function(){
 			turboThreshold: 0,
 			color: Highcharts.getOptions().colors[1],
 			lineWidth: 1.5,
-			vectorLength: 18,
 			yOffset: -15,
 			showInLegend: false,
+			enabled: false,
 			tooltip: {
 				pointFormat: '<span style="color:{point.color}">●</span> {series.name}: <b>{point.value} m/s</b> ({point.direction}&deg;)<br/',
 			}
@@ -165,7 +165,7 @@ WindChart.prototype.parseData = function (data) {
 
 	for(var i = 0; i < this.speed.length; i++ ) {
 		if(i % 3 === 0 ){
-			this.bearing.push([ data.bearing[i][0], data.wspeed[i][1], data.bearing[i][1]]);
+			this.bearing.push([ data.bearing[i][0], data.wspeed[i][1], data.bearing[i][1] ]);
 		}
 	}
 	return this.bearing;
@@ -178,14 +178,15 @@ WindChart.prototype.parseData = function (data) {
 	var max = data.wspeed[data.wspeed.length -1][0];
 	var min = max - 3600*1000*2;
 	const wbarb = this.parseData(data);
+		
 	this.chart.xAxis[0].update({
 		min: min,
 		max: max
 	});
+	
 	this.chart.series[0].setData( this.speed );
 	this.chart.series[1].setData( this.gusts );
 	this.chart.series[2].setData( wbarb );
-
 }
 
 export const WChart = WindChart;

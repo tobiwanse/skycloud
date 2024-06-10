@@ -1,5 +1,7 @@
-import "./css/style.css";
+"use strict";
+
 import "./js/config";
+import "./css/style.css";
 import * as bootstrap from 'bootstrap';
 import { Map, View } from "ol";
 import * as Proj from "ol/proj";
@@ -15,6 +17,8 @@ import {
 	Rotate,
 	defaults as defaultControls,
 } from "ol/control";
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 import LayerGroup from "ol/layer/Group";
 import LayerTile from "ol/layer/Tile";
 import SourceOSM from "ol/source/OSM";
@@ -25,9 +29,10 @@ import {
 	CreateBaseLayerGroup,
 	CreateOverLayerGroup,
 	CreateWindMarker,
-	CreatePoiLayerGroup
+	CreatePoiLayerGroup,
 } from "./js/layers";
 import { io } from 'socket.io-client';
+import * as SKYAWARE from './skyaware/script';
 import * as COMPASS from './js/compass';
 import * as JUMPRUN from './js/jumprun';
 import * as WINDS from './js/winds';
@@ -36,15 +41,24 @@ import * as Func from './js/functions';
 import { SideBarControl, AltitudeChartControl } from './js/custom-control';
 import { WChart } from './js/windchart.js';
 
+
+var ADSB_Enabled = true;
+var UAT_Enabled = false;
+var SkyAwareVersion = "unknown version";
+var RefreshInterval = 1000;
+var PositionHistorySize = 0;
+var UatPositionHistorySize = 0;
+
 var FetchWindsPending = null;
 var FetchWindsTimer = null;
 var FetchCumulusPending = null;
 var FetchCumulusTimer = null;
 var FetchJumprunPending = null;
 var FetchJumprunTimer = null;
+var FetchWDirDataPending = null;
+
 var wchart = null;
 var SelectedStation = null;
-
 const getPointsOfIntrest = ( ) => {
 	var requestTime = new Date( ).getTime( );
 	return $.ajax( {
@@ -59,7 +73,6 @@ const getPointsOfIntrest = ( ) => {
 			var time = performance.now( ) - this.startTime;
 			var seconds = time / 1000;
 			seconds = seconds.toFixed( 3 );
-			console.log( "Succes getting all POI! " + seconds + "s" );
 		} )
 		.fail( function ( data ) {
 			console.warn( "Error getting all POI!" );
@@ -79,7 +92,6 @@ const getPointOfIntrest = ( id ) => {
 			var time = performance.now( ) - this.startTime;
 			var seconds = time / 1000;
 			seconds = seconds.toFixed( 3 );
-			console.log( "Succes getting POI! " + seconds + "s" );
 			if ( res === null ) {
 				return;
 			}
@@ -105,7 +117,6 @@ const getJumprun = ( id ) => {
 		var time = performance.now( ) - this.startTime;
 		var seconds = time / 1000;
 		seconds = seconds.toFixed( 3 );
-		console.log( "Succes getting jumprun! " + seconds + "s" );
 	} )
 	FetchJumprunPending.fail( function ( res ) {
 		console.warn( "Error getting jumprun!" );
@@ -139,7 +150,6 @@ const saveJumprun = ( id ) => {
 			var time = performance.now( ) - this.startTime;
 			var seconds = time / 1000;
 			seconds = seconds.toFixed( 3 );
-			console.log( `Succes setting jumprun! ${seconds}s ` );
 		} )
 		.fail( function ( data ) {
 			console.warn( "Error setting jumprun!", data );
@@ -152,7 +162,7 @@ const getWinds = ( lonlat, hour = 0 ) => {
 		return;
 	}
 	FetchWindsPending = $.ajax( {
-		url: `/api/openmeteo/${lonlat}/${hour}`,
+		url: `./api/openmeteo/${lonlat}/${hour}/`,
 		startTime: performance.now( ),
 		timeout: 10000,
 		cache: false,
@@ -162,20 +172,20 @@ const getWinds = ( lonlat, hour = 0 ) => {
 		var time = performance.now( ) - this.startTime;
 		var seconds = time / 1000;
 		seconds = seconds.toFixed( 3 );
-		console.log( "Succes getting winds! " + seconds + "s" );
 	} )
 	FetchWindsPending.fail( function ( res ) {
-		console.warn( "Error getting winds!" , res);
+		console.warn( "Error getting openmeteo winds!" , res);
 	} )
 	return FetchWindsPending;
 };
 const getCumulus = ( id ) => {
 	var requestTime = new Date( ).getTime( );
 	if ( FetchCumulusPending !== null && FetchCumulusPending.state( ) == 'pending' ) {
-		return {};
+		return;
 	}
+	
 	FetchCumulusPending = $.ajax( {
-		url: `/api/cumulus/${id}`,
+		url: `./api/cumulus/windchartdata/`,
 		startTime: performance.now( ),
 		timeout: 10000,
 		cache: false,
@@ -185,13 +195,43 @@ const getCumulus = ( id ) => {
 		var time = performance.now( ) - this.startTime;
 		var seconds = time / 1000;
 		seconds = seconds.toFixed( 3 );
-		console.log( "Succes FetchCumulus! " + seconds + "s" );
 	} )
 	FetchCumulusPending.fail( function ( res ) {
 		console.warn( "Error FetchCumulus!", res );
 	} )
 	return FetchCumulusPending;
-}
+};
+const getSkyawareReceiver = () => {
+	return $.ajax( { url: `./api/skyaware/receiver`,
+	 timeout: 5000,
+	 cache: false,
+	 dataType: 'json' })
+	
+	.done(function(data) {
+			console.log('dump1090-fa enabled');
+	})
+	.fail( function( data ) {
+			console.warn('Error reading dump1090-fa receiver.json. dump1090-fa may be disabled');
+			ADSB_Enabled = false;
+	})
+	.always( function() {
+	});
+};
+const getSkyawareAircraft = () => {
+	return $.ajax( { url: `./api/skyaware/aircraft`,
+	 timeout: 5000,
+	 cache: false,
+	 dataType: 'json' })
+	.done(function(data) {
+			console.log('dump1090-fa enabled');
+	})
+	.fail( function( data ) {
+			console.warn('Error reading dump1090-fa receiver.json. dump1090-fa may be disabled');
+			ADSB_Enabled = false;
+	})
+	.always( function() {
+	});
+};
 const getLayerByName = function ( layers, name ) {
 	let layer = null;
 	layers.forEach( function ( lyr ) {
@@ -286,6 +326,13 @@ const initialize = function ( callback ) {
 				selectPointOfIntrest( SelectedPointOfIntrest );
 			}
 		} );
+	
+	// Get receiver metadata, reconfigure using it, then continue
+	// with initialization
+	getSkyawareReceiver( ).then( ( res ) => {} )
+	.always( ( ) => {
+		SKYAWARE.init_skyaware( );
+	} );		
 };
 const applyUrlQueryStrings = ( ) => {
 	let url = new URL( window.location.href );
@@ -397,7 +444,6 @@ const applyUrlQueryStrings = ( ) => {
 	}
 }
 const filterWinds = ( filter ) => {
-	console.log( 'Filter Winds' );
 	if ( DisplayAltiUnit === 'metric' ) {
 		FilterWindsMetric = localStorage[ 'FilterWindsMetric' ] = filter;
 	} else {
@@ -407,7 +453,6 @@ const filterWinds = ( filter ) => {
 	updateWindTable( );
 }
 const setDisplay = ( ) => {
-	console.log( 'Set Display' );
 	toggleGrafs( 'show' );
 	toggleWidgets( 'show' );
 	toggleAltiChartControl( false );
@@ -429,8 +474,8 @@ const setCumulus = ( id ) => {
 	SelectedStation = id;
 	FetchCumulusTimer = null;
 	getCumulus( id ).then( ( res ) => {
-			if ( typeof res.wchart !== 'undefined' ) {
-				wchart.update( res.wchart );
+			if ( typeof res !== 'undefined' ) {
+				wchart.update( res );
 			}
 		} )
 		.catch( ( err ) => {
@@ -438,8 +483,8 @@ const setCumulus = ( id ) => {
 		} )
 	FetchCumulusTimer = setInterval( ( ) => {
 		getCumulus( id ).then( ( res ) => {
-				if ( typeof res.wchart !== 'undefined' ) {
-					wchart.update( res.wchart );
+				if ( typeof res !== 'undefined' ) {
+					wchart.update( res );
 				}
 			} )
 			.catch( ( err ) => {
@@ -458,13 +503,11 @@ const toggleGrafs = ( show ) => {
 	}
 }
 const setZoom = ( zoom ) => {
-	console.log( 'setZoom' );
 	ZoomLvl = localStorage[ "ZoomLvl" ] = Number( zoom );
 }
 const setLayers = ( layers ) => {
 	layers = layers.split( ',' );
 	LayerSwitcher.forEachRecursive( BaseOverLayers, function ( lyr ) {
-		console.log( lyr.get( 'name' ) );
 		if ( isInArray( lyr.get( 'name' ), layers ) ) {
 			lyr.setVisible( true );
 		} else {
@@ -474,7 +517,6 @@ const setLayers = ( layers ) => {
 }
 const setPoiLayers = ( layer ) => {
 	LayerSwitcher.forEachRecursive( PoiLayers, function ( lyr ) {
-		console.log( lyr.get( 'name' ) );
 		if ( lyr.get( 'name' ) === layer ) {
 			lyr.setVisible( true );
 		} else {
@@ -601,7 +643,6 @@ const setJumprunSettings = ( ) => {
 	$( '#jumprun-offset' ).val( offset );
 	$( '#jumprun-separation' ).val( separation );
 }
-
 const onChangeJumprunSettings = ( event ) => {
 	clearInterval( FetchJumprunTimer );
 	if ( event.target.id === 'jumprun-direction' ) {
@@ -609,11 +650,11 @@ const onChangeJumprunSettings = ( event ) => {
 		if ( event.target.value < 0 ) event.target.value = 345;
 	}
 	//var direction = $( '#jumprun-direction' ).val( ) ? Number( $( '#jumprun-direction' ).val( ) ) : "";
-	//var greenlight = $( '#jumprun-greenlight' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-greenlight' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
-	//var redlight = $( '#jumprun-redlight' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-redlight' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
-	//var offset = $( '#jumprun-offset' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-offset' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
-	//var separation = $( '#jumprun-separation' ).val( ) ? Number( $( '#jumprun-separation' ).val( ) ) : "";
-	//var timestamp = Math.floor( Date.now( ) );
+	var greenlight = $( '#jumprun-greenlight' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-greenlight' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
+	var redlight = $( '#jumprun-redlight' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-redlight' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
+	var offset = $( '#jumprun-offset' ).val( ) ? Func.convert_distance_to_km( $( '#jumprun-offset' ).val( ), DisplayDistUnit ) : ""; //DisplayDistUnit to km
+	var separation = $( '#jumprun-separation' ).val( ) ? Number( $( '#jumprun-separation' ).val( ) ) : "";
+	var timestamp = Math.floor( Date.now( ) );
 	var data = {};
 
 	data.direction = $( '#jumprun-direction' ).val( );
@@ -810,7 +851,6 @@ const updateWindTable = ( ) => {
 	$( '.openmeteo-cred' ).html( '<a href="https://open-meteo.com">open-meteo.com</a>' );
 }
 const initialize_map = ( ) => {
-	console.log( 'Init Map' );
 	const alticontrol = new AltitudeChartControl( DisplayAltiUnit, toggleDisplayUnits );
 	OLMap = new Map( {
 		target: "map",
@@ -836,13 +876,15 @@ const initialize_map = ( ) => {
 		} ),
 	} );
 	OLView = OLMap.getView( );
+	AcLayers = SKYAWARE.CreateACLayers( );
 	BaseLayers = CreateBaseLayerGroup( );
 	BaseOverLayers = CreateOverLayerGroup( );
 	PoiLayers = CreatePoiLayerGroup( );
+	
 	OLMap.addLayer( BaseLayers );
 	OLMap.addLayer( BaseOverLayers );
 	OLMap.addLayer( PoiLayers );
-
+	
 	let foundType = false;
 	let baseCount = 0;
 
@@ -893,7 +935,7 @@ const initialize_map = ( ) => {
 		OLMap.addControl( layerSwitcher );
 	}
 
-	OLMap.once( "postrender", function ( evt ) { console.log( 'Post render' ) } );
+	OLMap.once( "postrender", function ( evt ) { } );
 	OLMap.on( "singleclick", function ( evt ) {
 		let featureIsFound = false;
 		let poi = evt.map.forEachFeatureAtPixel( evt.pixel, function ( feature, layer ) {
@@ -908,7 +950,7 @@ const initialize_map = ( ) => {
 
 		var isInsideCompass = containsCoordinate( Extent, evt.coordinate );
 		if ( !featureIsFound && SelectedPointOfIntrest === null ) {
-			console.log( 'drop pin' );
+			;
 		}
 		if ( !isInsideCompass && SelectedPointOfIntrest !== null ) {
 			unsetPOI( );
@@ -984,7 +1026,6 @@ const FetchWinds = ( ) => {
 		} );
 }
 const setPOI = ( ) => {
-	console.log( 'Set Poi' );
 	const poi = PointOfIntrest;
 	const center = Proj.fromLonLat( poi.lonlat );
 	$( '#poi-switcher' ).hide( );
@@ -1027,9 +1068,7 @@ const setPOI = ( ) => {
 		OLView.setZoom( DisplayZoomLvl );
 	}
 };
-
 const unsetPOI = function ( evt ) {
-	console.log( 'Unset poi' );
 	localStorage[ "SelectedPointOfIntrest" ] = SelectedPointOfIntrest = DefaultPointOfIntrest;
 	clearInterval( FetchWindsTimer );
 	clearInterval( FetchJumprunTimer );
@@ -1055,9 +1094,7 @@ const unsetPOI = function ( evt ) {
 		}
 	} )
 };
-
 const resetMap = ( ) => {
-	console.log( 'reset map' );
 	localStorage[ 'CenterLat' ] = CenterLat = DefaultCenterLat;
 	localStorage[ 'CenterLon' ] = CenterLon = DefaultCenterLon;
 	localStorage[ "ZoomLvl" ] = ZoomLvl = DefaultZoomLvl;
@@ -1096,7 +1133,6 @@ const resetMap = ( ) => {
 	unsetPOI( );
 	setSettings( );
 }
-
 const toggleSidebarPanel = ( event ) => {
 	$( '.sidebar-panel .panel' ).removeClass( 'active' );
 	var displaySelectedPanel = null;
@@ -1114,7 +1150,6 @@ const toggleSidebarPanel = ( event ) => {
 	}
 	DisplaySelectedPanel = localStorage[ 'DisplaySelectedPanel' ] = displaySelectedPanel;
 }
-
 const toggleSidebarControl = ( event ) => {
 	if ( event ) {
 		$( ' .sidebar-panel ' ).toggleClass( "shown" );
@@ -1123,7 +1158,6 @@ const toggleSidebarControl = ( event ) => {
 	}
 	DisplaySidebar = localStorage[ 'DisplaySidebar' ] = $( ' .sidebar-panel ' ).hasClass( "shown" );
 }
-
 const toggleAltiChartControl = ( event ) => {
 	if ( DisplayAltiUnit == 'metric' ) {
 		$( '#altitude_chart_button' ).addClass( 'altitudeMeters' );
@@ -1131,7 +1165,6 @@ const toggleAltiChartControl = ( event ) => {
 		$( '#altitude_chart_button' ).removeClass( 'altitudeMeters' );
 	}
 }
-
 const toggleScaleLineControl = ( visible ) => {
 	if ( OLMap ) {
 		OLMap.getControls( ).forEach( function ( control ) {
@@ -1141,7 +1174,6 @@ const toggleScaleLineControl = ( visible ) => {
 		} );
 	}
 }
-
 const toggleScaleLineVisibility = ( visible ) => {
 	if ( visible ) {
 		$( '.ol-scale-bar' ).removeClass( 'hidden' );
@@ -1149,7 +1181,6 @@ const toggleScaleLineVisibility = ( visible ) => {
 		$( '.ol-scale-bar' ).addClass( 'hidden' );
 	}
 }
-
 const togglePoiSwtcher = ( visible ) => {
 	if ( visible ) {
 		$( '#poi-switcher' ).removeClass( 'hidden' );
